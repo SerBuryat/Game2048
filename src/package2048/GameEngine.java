@@ -4,14 +4,14 @@ package package2048;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 
-public class GameEngine {
+class GameEngine {
 
-    public static final GameEngine GAME_ENGINE = new GameEngine();
-    public static final int GOAL = 2048;
+    static final GameEngine GAME_ENGINE = new GameEngine();
+    static int goal;
     private boolean isGameStopped;
-    private int score;
+    static int scoreSteps; // show score in WinMessage(the count of steps)
 
-    public GameEngine () {
+    private GameEngine () {
         DrawGame.DRAW.addKeyListener(new KeyAdapter() {
             public void keyPressed(KeyEvent e) {
 
@@ -35,16 +35,20 @@ public class GameEngine {
         });
     }
 
-    public void createGame() {
+    static void setGOAL(int setGoal) {
+        goal = setGoal;
+    }
+
+    void createGame() {
         isGameStopped = false;
-        score = 0;
+        scoreSteps = 0;
 
         createNewNumber();
         createNewNumber();
     }
 
-    private void moveLeft() {
-        if(isGameStopped == false) {
+    private void move() {
+        if(!isGameStopped) {
             if(canMove()) {
 
                 boolean isMove = false;
@@ -66,39 +70,45 @@ public class GameEngine {
             } else
                 lose();
 
-            if (getMaxNumber() == GOAL)
+            if (getMaxNumber() == goal)
                 win();
         }
+    }
 
+    private void moveLeft() {
+        scoreSteps+=1;
+        move();
     }
 
     private void moveUp() {
+        scoreSteps+=1;// every move stepsScore + 1
         rotateClockwise();
         rotateClockwise();
         rotateClockwise();
-        moveLeft();
+        move();
         rotateClockwise();
     }
 
     private void moveRight() {
+        scoreSteps+=1;// every move stepsScore + 1
         rotateClockwise();
         rotateClockwise();
-        moveLeft();
+        move();
         rotateClockwise();
         rotateClockwise();
     }
 
     private void moveDown() {
+        scoreSteps+=1;// every move stepsScore + 1
         rotateClockwise();
-        moveLeft();
+        move();
         rotateClockwise();
         rotateClockwise();
         rotateClockwise();
     }
 
-
     private void rotateClockwise() {
-        if (isGameStopped == false) {
+        if (!isGameStopped) {
             int[][] tempField = new int[DrawGame.SIDE][DrawGame.SIDE];
             int[][] gameField = getGameField();
 
@@ -120,7 +130,6 @@ public class GameEngine {
         for(int i = 0;i<row.length-1;i++) {
             if(row[i] == row[i+1] && row[i] != 0) {
                 row[i] = row[i] + row[i+1];
-                score += row[i];
                 row[i+1] = 0;
                 isMove = true;
             }
@@ -168,9 +177,7 @@ public class GameEngine {
     }
 
     private int getRandomCoordinate () {
-        int coordinate = (int) ((Math.random()) * 4);
-
-        return coordinate;
+        return (int) ((Math.random()) * 4);
     }
 
     private int[][] getGameField() {
@@ -198,12 +205,12 @@ public class GameEngine {
 
     private void win () {
         isGameStopped = true;
-        DrawGame.DRAW.getWinMessage(score);
+        DrawGame.DRAW.getWinMessage();
     }
 
     private void lose() {
         isGameStopped = true;;
-        DrawGame.DRAW.getLoseMessage(score);
+        DrawGame.DRAW.getLoseMessage();
     }
 
     private void reset() {
@@ -240,7 +247,7 @@ public class GameEngine {
         return false;
     }
 
-    public int getMaxNumber () {
+    private int getMaxNumber () {
         int max = 0;
         int[][]gameField = getGameField();
 

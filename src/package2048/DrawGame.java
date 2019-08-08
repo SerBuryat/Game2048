@@ -1,48 +1,40 @@
 package package2048;
 
+import javax.swing.*;
+import javax.swing.border.Border;
 
-import javax.swing.BorderFactory;
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JOptionPane;
+import java.awt.*;
+import java.io.BufferedReader;
+import java.nio.ByteOrder;
 
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.GridLayout;
+class DrawGame extends JFrame {
+    static final int SIDE = 4;
+    static final DrawGame DRAW = new DrawGame();
+    private JPanel complexityChooserPanel = new JPanel();
+    private JPanel gamePanel = new JPanel();
+    private JPanel infoPanel = new JPanel();
+    private JLabel scoreLabel = new JLabel();
+    JButton[][] gameField = new JButton[SIDE][SIDE];
+    private Font font = new Font("Ariel",Font.BOLD,30);
 
 
-public class DrawGame extends JFrame {
-
-    public static final int SIDE = 4;
-    public static final DrawGame DRAW = new DrawGame();
-    public JButton[][] gameField = new JButton[SIDE][SIDE];
-    public static final Font font = new Font("Ariel",Font.BOLD,30);
-
-    public void initialize() {
-        setTitle("2048");
+    void initialize() {
+        setTitle("2048 by SerBuryat");
         setSize(600,600);
         setResizable(false);
         setLocationRelativeTo(null);
-        setLayout(new GridLayout(SIDE, SIDE));
+        setLayout(new BorderLayout());
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setVisible(true);
         setFocusable(true);
 
-        for(int x = 0; x < SIDE; x++) {
-            for(int y = 0; y < SIDE; y++) {
-                gameField[x][y] = new JButton();
-                getContentPane().add(gameField[x][y]);
-                gameField[x][y].setBorder(BorderFactory.createLineBorder(Color.BLACK));
-                gameField[x][y].setBackground(Color.YELLOW);
-                gameField[x][y].setFont(font);
-                gameField[x][y].setFocusable(false);
-                gameField[x][y].setFocusPainted(false);
-                gameField[x][y].setText("0");
-            }
-        }
+        setDifficultyPanel();
+
     }
 
-    public void drawField (int[][] intField) { // put intArray in JButtonArray (put each intToString to ButtonSetText) and draw it in app
+    void drawField (int[][] intField) { // put intArray in JButtonArray (put each intToString to ButtonSetText) and draw it in app
+
+        scoreLabel.setText("Goal : " + GameEngine.goal + " - Steps : " + String.valueOf(GameEngine.scoreSteps)); // changes score
 
         for(int x = 0; x < SIDE; x++) {
             for(int y = 0; y < SIDE; y++) {
@@ -61,7 +53,7 @@ public class DrawGame extends JFrame {
         }
     }
 
-    public Color getBackgroundColor(int value) {
+    private Color getBackgroundColor(int value) {
         switch (value) {
             case 2:    return new Color(0xeee4da);
             case 4:    return new Color(0xede0c8);
@@ -78,17 +70,69 @@ public class DrawGame extends JFrame {
         return new Color(0xcdc1b4);
     }
 
-    public void getWinMessage (int score) {
-        JOptionPane.showMessageDialog(null, "Heyyyy, great!!! YOU WIN!" + "\n " + " Your score:  " + score +"\n" + "Tap ESC to start new game :)");
+    void getWinMessage () {
+        JOptionPane.showMessageDialog(null, "Heyyyy, great!!! YOU WIN!" + "\n " + " Your score:  " + GameEngine.scoreSteps +"\n" + "Tap ESC to start new game :)");
     }
 
-    public void getLoseMessage (int score) {
-        JOptionPane.showMessageDialog(null, "Ohhhhh, sry buddy!!! YOU LOSE!" + "\n" + "  Your score:  " + score +"\n" + "Tap ESC to start new game :)");
+    void getLoseMessage () {
+        JOptionPane.showMessageDialog(null, "Ohhhhh, sry buddy!!! YOU LOSE!" +"\n" +  " Your score:  " + GameEngine.scoreSteps +"\n" + "Tap ESC to start new game :)");
     }
 
-    public void startMessage () {
+    void startMessage () {
         JOptionPane.showMessageDialog(null, "Hello man! Some rules: ↑ ↓ → ← is movement , ECS - reset. Goodluck :)");
     }
+
+    private void setDifficultyPanel() {
+        JLabel complexityLabel = new JLabel("Choose difficulty : ");
+        JButton easyButton = new JButton("256");
+        JButton mediumButton = new JButton("512");
+        JButton hardButton = new JButton("1024");
+        JButton nativeButton = new JButton("2048");
+
+        getContentPane().add(complexityChooserPanel,BorderLayout.CENTER);
+        complexityChooserPanel.add(complexityLabel);
+        complexityChooserPanel.add(easyButton);
+        complexityChooserPanel.add(mediumButton);
+        complexityChooserPanel.add(hardButton);
+        complexityChooserPanel.add(nativeButton);
+        complexityChooserPanel.setLayout(new GridLayout(complexityChooserPanel.getComponentCount(),0));
+
+        easyButton.addActionListener(e -> buttonAction(easyButton));
+        mediumButton.addActionListener(e -> buttonAction(mediumButton));
+        hardButton.addActionListener(e -> buttonAction(hardButton));
+        nativeButton.addActionListener(e -> buttonAction(nativeButton));
+    }
+
+    private void setGamePanel() {
+        getContentPane().add(infoPanel,BorderLayout.NORTH);
+        infoPanel.add(scoreLabel);
+
+        getContentPane().add(gamePanel, BorderLayout.CENTER);
+        gamePanel.setLayout(new GridLayout(SIDE, SIDE));
+
+        scoreLabel.setText("Goal : " + GameEngine.goal + " - Steps : " + String.valueOf(GameEngine.scoreSteps));
+
+        for(int x = 0; x < SIDE; x++) {
+            for(int y = 0; y < SIDE; y++) {
+                gameField[x][y] = new JButton();
+                gamePanel.add(gameField[x][y]);
+                gameField[x][y].setBorder(BorderFactory.createLineBorder(Color.BLACK));
+                gameField[x][y].setBackground(Color.YELLOW);
+                gameField[x][y].setFont(font);
+                gameField[x][y].setFocusable(false);
+                gameField[x][y].setFocusPainted(false);
+                gameField[x][y].setText("0");
+            }
+        }
+    }
+
+    private void buttonAction(JButton button) {
+        GameEngine.setGOAL(Integer.parseInt(button.getText()));
+        getContentPane().removeAll();
+        setGamePanel();
+        GameEngine.GAME_ENGINE.createGame();
+    }
+
 }
 
 
