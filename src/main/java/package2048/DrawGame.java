@@ -1,4 +1,4 @@
-package package2048;
+package main.java.package2048;
 
 import javax.swing.*;
 import javax.swing.border.Border;
@@ -79,7 +79,7 @@ class DrawGame extends JFrame {
     }
 
     void startMessage () {
-        JOptionPane.showMessageDialog(null, "Hello man! Some rules: ↑ ↓ → ← is movement , ECS - reset. Goodluck :)");
+        JOptionPane.showMessageDialog(null, "Hello man! Some rules: Arrows(RIGHT,LEFT,UP,DOWN) is movement , ECS - reset. Goodluck :)");
     }
 
     private void setDifficultyPanel() {

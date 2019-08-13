@@ -1,5 +1,4 @@
-package package2048;
-
+package main.java.package2048;
 
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;

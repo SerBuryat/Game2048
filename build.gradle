@@ -1,0 +1,18 @@
+apply plugin : 'java'
+apply plugin : 'application'
+
+mainClassName = 'package2048.Game'
+
+jar {
+	baseName = 'Game-2048'
+	version = '1.0.0'
+	manifest{
+		attributes(
+			'Main-Class' : 'package2048.Game'
+		)
+	}
+}
+
+wrapper {
+	gradleVersion = '5.5.1'
+}

@@ -1,4 +1,4 @@
-package package2048;
+package main.java.package2048;
 
 public class Game {
         public static void main(String[] args) {
